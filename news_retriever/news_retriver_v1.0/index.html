@@ -1,227 +1,191 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Retriever</title>
+    <title>News Retriever System</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --danger: #ef4444;
+            --bg-color: #0f172a; --card-bg: #1e293b; --text-main: #e2e8f0;
+            --text-muted: #94a3b8; --accent: #3b82f6; --accent-hover: #2563eb; --danger: #ef4444;
         }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 800px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 15px;
-        }
-
-        h1 { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: 1px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 800px; }
         
-        .lang-btn {
-            background: transparent;
-            border: 1px solid var(--text-muted);
-            color: var(--text-main);
-            padding: 6px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .notice-board { background-color: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 25px; font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+        .notice-board b { color: var(--text-main); }
 
-        .search-wrapper {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 14px 20px;
-            background-color: var(--card-bg);
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        input[type="text"]:focus { border-color: var(--accent); }
-
-        button.search-btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 0 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button.search-btn:hover { background-color: var(--accent-hover); }
+        .auth-panel { background-color: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .auth-panel input { width: 80%; padding: 12px; margin-bottom: 15px; background: var(--bg-color); border: 1px solid #334155; border-radius: 6px; color: white; outline: none; }
+        .auth-panel button { background-color: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 0 5px; }
+        .auth-panel button:hover { background-color: var(--accent-hover); }
+        .auth-panel .register-btn { background-color: transparent; border: 1px solid var(--text-muted); }
+        
+        .search-wrapper { display: flex; gap: 12px; margin-bottom: 30px; }
+        input[type="text"] { flex: 1; padding: 14px 20px; background-color: var(--card-bg); border: 1px solid #334155; border-radius: 8px; color: var(--text-main); font-size: 16px; outline: none; }
+        button.search-btn { background-color: var(--accent); color: white; border: none; padding: 0 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
         button.search-btn:disabled { background-color: #475569; cursor: not-allowed; }
-
-        .results { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
         
-        .results li {
-            background-color: var(--card-bg);
-            padding: 16px 20px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
-            line-height: 1.6;
-            animation: fadeIn 0.4s ease forwards;
-        }
-
+        .results { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+        .results li { background-color: var(--card-bg); padding: 16px 20px; border-radius: 8px; border-left: 4px solid var(--accent); line-height: 1.6; }
+        .source-tag { color: #3b82f6; font-size: 12px; margin-right: 8px; font-weight: bold;}
         .error-msg { border-left-color: var(--danger) !important; color: #fca5a5; }
         
-        /* 加载动画 */
-        .loader {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 8px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .status-bar { text-align: right; margin-bottom: 10px; font-size: 14px; color: var(--text-muted); }
+        .logout-btn { background: transparent; border: none; color: var(--danger); cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1 id="title">📡 News Retriever</h1>
-        <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">English</button>
+    <div class="notice-board">
+        <p>🕒 <b>Server SLA Window:</b> 09:30 - 21:30 (Daily) | 服务器开放时间：每日 09:30 - 21:30</p>
+        <p>💡 <b>Tip:</b> Please use your browser's translation tool if needed. | 提示：请自行开启浏览器翻译功能。</p>
     </div>
 
-    <div class="search-wrapper">
-        <input type="text" id="keywordInput" placeholder="请输入搜索关键词..." onkeypress="if(event.key === 'Enter') searchNews()">
-        <button class="search-btn" id="searchBtn" onclick="searchNews()">
-            <span id="btnText">搜索</span>
-        </button>
+    <div id="statusBar" class="status-bar" style="display: none;">
+        Logged in as: <b id="currentUserDisplay"></b> 
+        <button class="logout-btn" onclick="logout()">Logout / 登出</button>
     </div>
 
-    <ul class="results" id="resultsList">
-        <!-- 结果渲染区 -->
-    </ul>
+    <div id="authPanel" class="auth-panel">
+        <h2>🔐 System Access</h2>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">请登录后使用检索功能（默认管理员: __admin__ / admin123）</p>
+        <input type="text" id="authUsername" placeholder="Username / 用户名">
+        <input type="password" id="authPassword" placeholder="Password / 密码">
+        <div>
+            <button onclick="login()">Login / 登录</button>
+            <button class="register-btn" onclick="register()">Register / 注册</button>
+        </div>
+    </div>
+
+    <div id="searchPanel" style="display: none;">
+        <h1>📡 News Retriever Engine</h1>
+        <div class="search-wrapper">
+            <input type="text" id="keywordInput" placeholder="Enter keyword (e.g., AI, 经济)..." onkeypress="if(event.key === 'Enter') searchNews()">
+            <button class="search-btn" id="searchBtn" onclick="searchNews()">Search</button>
+        </div>
+        <ul class="results" id="resultsList"></ul>
+    </div>
 </div>
 
 <script>
-    let currentLang = 'zh';
-    const i18n = {
-        zh: {
-            title: "📡 极客新闻检索器",
-            placeholder: "输入关键词，例如：人工智能...",
-            searchBtn: "搜索",
-            searching: "搜索中...",
-            langBtn: "English",
-            emptyMsg: "❌没有找到相关新闻。",
-            errSLA: "❌服务器已关闭。开放时间 09:30 - 21:30。",
-            errWAF: "⚠️请求被 WAF 拦截：检测到恶意爬虫。",
-            errRate: "⚠️请求过于频繁，请稍后再试。",
-            errGeneral: "❌获取数据失败，请检查网络。"
-        },
-        en: {
-            title: "📡 Geek News Retriever",
-            placeholder: "Enter keyword (e.g., AI)...",
-            searchBtn: "Search",
-            searching: "Searching...",
-            langBtn: "中文",
-            emptyMsg: "❌No news found.",
-            errSLA: "❌Service is closed. SLA Window 09:30 - 21:30.",
-            errWAF: "⚠️Forbidden by WAF: Malicious bot detected.",
-            errRate: "⚠️Too many requests. Please try again later.",
-            errGeneral: "❌Failed to fetch data. Check your network."
+    window.onload = () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            showSearchPanel(token);
         }
     };
 
-    function toggleLanguage() {
-        currentLang = currentLang === 'zh' ? 'en' : 'zh';
-        const t = i18n[currentLang];
-        document.getElementById('title').innerText = t.title;
-        document.getElementById('keywordInput').placeholder = t.placeholder;
-        document.getElementById('btnText').innerText = t.searchBtn;
-        document.getElementById('langBtn').innerText = t.langBtn;
+    function showSearchPanel(token) {
+        const username = token.replace("token_for_", "");
+        document.getElementById('currentUserDisplay').innerText = username;
+        document.getElementById('statusBar').style.display = 'block';
+        document.getElementById('authPanel').style.display = 'none';
+        document.getElementById('searchPanel').style.display = 'block';
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        location.reload(); 
+    }
+
+    async function login() {
+        const user = document.getElementById('authUsername').value.trim();
+        const pwd = document.getElementById('authPassword').value.trim();
+        if (!user || !pwd) return alert("请输入用户名和密码");
+
+        const formData = new URLSearchParams();
+        formData.append('username', user);
+        formData.append('password', pwd);
+
+        try {
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const data = await response.json();
+            
+            if (!response.ok) throw new Error(data.detail || "Login failed");
+            
+            localStorage.setItem('token', data.access_token);
+            alert("✅ 登录成功！");
+            showSearchPanel(data.access_token);
+            
+        } catch (error) {
+            alert(`🚨 登录失败: ${error.message}`);
+        }
+    }
+
+    async function register() {
+        const user = document.getElementById('authUsername').value.trim();
+        const pwd = document.getElementById('authPassword').value.trim();
+        if (!user || !pwd) return alert("请输入用户名和密码");
+
+        try {
+            const response = await fetch('/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pwd })
+            });
+            const data = await response.json();
+            
+            if (!response.ok) throw new Error(data.detail || "Registration failed");
+            alert("✅ 注册成功！请点击登录。");
+            
+        } catch (error) {
+            alert(`🚨 注册失败: ${error.message}`);
+        }
     }
 
     async function searchNews() {
         const keyword = document.getElementById('keywordInput').value.trim();
         if (!keyword) return;
 
-        const t = i18n[currentLang];
+        const token = localStorage.getItem('token');
+        if (!token) return logout(); 
+
         const btn = document.getElementById('searchBtn');
-        const btnText = document.getElementById('btnText');
         const list = document.getElementById('resultsList');
         
-        // 状态切换：加载中
-        btn.disabled = true;
-        btnText.innerText = t.searching;
-        list.innerHTML = '<li style="border-color: var(--text-muted); color: var(--text-muted);">Loading data pipeline...</li>';
+        btn.disabled = true; btn.innerText = "Searching...";
+        list.innerHTML = '<li>Fetching data...</li>';
 
         try {
-            const response = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`);
+            const response = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` } 
+            });
             
-            // 核心：拦截后端的各种防线报错
+            if (response.status === 401) {
+                alert("凭证已过期，请重新登录");
+                return logout();
+            }
+
             if (!response.ok) {
                 const errorData = await response.json();
-                if (response.status === 503) throw new Error(t.errSLA);
-                if (response.status === 403) throw new Error(t.errWAF);
-                if (response.status === 429) throw new Error(t.errRate);
-                throw new Error(errorData.detail || t.errGeneral);
+                throw new Error(errorData.detail || "Failed to fetch data");
             }
 
             const data = await response.json();
-            list.innerHTML = ''; // 清空加载提示
+            list.innerHTML = '';
 
             if (data.data && data.data.length > 0) {
-                data.data.forEach((news, index) => {
+                data.data.forEach(newsItem => {
                     const li = document.createElement('li');
-                    // 加个序号显得更专业
-                    li.innerHTML = `<strong style="color:var(--text-muted); margin-right: 10px;">${String(index + 1).padStart(2, '0')}</strong> ${news}`;
+                    li.innerHTML = `<span class="source-tag">[${newsItem.source}]</span> ${newsItem.title}`;
                     list.appendChild(li);
                 });
             } else {
-                list.innerHTML = `<li>${t.emptyMsg}</li>`;
+                list.innerHTML = `<li>No news found.</li>`;
             }
         } catch (error) {
-            // 显示错误信息
             list.innerHTML = `<li class="error-msg">🚨 ${error.message}</li>`;
         } finally {
-            // 恢复按钮状态
-            btn.disabled = false;
-            btnText.innerText = t.searchBtn;
+            btn.disabled = false; btn.innerText = "Search";
         }
     }
 </script>
-
 </body>
 </html>
-```
