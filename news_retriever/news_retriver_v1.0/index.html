@@ -168,20 +168,37 @@
                 throw new Error(errorData.detail || "Failed to fetch data");
             }
 
-            const data = await response.json();
-            list.innerHTML = '';
+const data = await response.json();
+list.innerHTML = '';
 
-            if (data.data && data.data.length > 0) {
-                data.data.forEach(newsItem => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span class="source-tag">[${newsItem.source}]</span> ${newsItem.title}`;
-                    list.appendChild(li);
-                });
-            } else {
-                list.innerHTML = `<li>No news found.</li>`;
-            }
-        } catch (error) {
-            list.innerHTML = `<li class="error-msg">🚨 ${error.message}</li>`;
+if (data.data && data.data.length > 0) {
+    data.data.forEach(newsItem => {
+        const li = document.createElement('li');
+
+    let sentimentColor = "#f59e0b"; // 默认黄色
+    let sentimentText = "[ WARN ]";
+
+    if (newsItem.sentiment_label === "Positive") {
+        sentimentColor = "#10b981"; // 绿色
+        sentimentText = "[ PASS ]";
+    } else if (newsItem.sentiment_label === "Negative") {
+        sentimentColor = "#ef4444"; // 红色
+        sentimentText = "[ FAIL ]";
+    }
+
+    li.innerHTML = `
+        <span style="color: ${sentimentColor}; font-weight: bold; margin-right: 8px; font-family: monospace;">
+            ${sentimentText}
+        </span>
+        <span class="source-tag">[${newsItem.source}]</span> 
+        ${newsItem.title}
+    `;
+        
+        list.appendChild(li);
+    });
+} else {
+    list.innerHTML = '<li>No news found.</li>';
+}
         } finally {
             btn.disabled = false; btn.innerText = "Search";
         }
