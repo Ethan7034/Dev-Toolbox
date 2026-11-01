@@ -5,7 +5,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from datetime import datetime, time
-from routers import auth, search
+from routers import auth, search, history
 import os
 
 app = FastAPI(
@@ -93,6 +93,7 @@ async def add_process_time_header(request: Request, call_next):
 # --- 4. API Endpoints ---
 app.include_router(auth.router)
 app.include_router(search.router)
+app.include_router(history.router)
 @app.get("/")
 def read_root():
     html_path = os.path.join(os.path.dirname(__file__),"index.html")

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pipelines.scraper import search_all_sources
-# 🌟 引入 NLP 管道
 from pipelines.nlp import analyze_sentiment 
 from routers.auth import get_current_user
+from pipelines.database import log_search
 
 router = APIRouter(prefix="/api", tags=["Search"])
 
@@ -33,5 +33,5 @@ def search_news(
         }
         
     except Exception as e:
-        print(f"[!] Search Error: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error.")
+        print(f"⚠️ Search Error: {e}")
+        raise HTTPException(status_code=500, detail="❌Internal Server Error.")
