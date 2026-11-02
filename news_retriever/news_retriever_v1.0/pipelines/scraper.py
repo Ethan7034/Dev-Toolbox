@@ -17,7 +17,7 @@ def fetch_news_local_filter(keyword):
         response.raise_for_status()
         response.encoding = 'utf-8'
         
-        root = ET.fromstring(response.text)
+        root = ET.fromstring(response.content)
         
         for item in root.findall('.//item'):
             title = item.find('title').text
@@ -37,7 +37,7 @@ def fetch_news_local_filter(keyword):
         print("  ⚠️No exact match found. Returning latest headlines instead.")
         try:
             response = requests.get(url, headers=HEADERS, timeout=10)
-            root = ET.fromstring(response.text)
+            root = ET.fromstring(response.content)
             for item in root.findall('.//item')[:5]:
                 results.append({
                     "title": item.find('title').text,

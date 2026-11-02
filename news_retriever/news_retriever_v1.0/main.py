@@ -5,6 +5,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from datetime import datetime, time
+from zoneinfo import ZoneInfo
 from routers import auth, search, history
 import os
 
@@ -37,7 +38,7 @@ Welcome to the **News Retriever API**. For edge security, WAF and rate limiting 
    * Click **Execute** to view scraped and analyzed results. *(点击执行查看结果)*
 
 ---
-🕒 **SLA Window / 服务时间** Daily 09:30 - 21:30 (Returns 503 outside this window / 非营业时间返回 503)\n
+🕒 **SLA Window / 服务时间** Daily 10:30 - 22:30 (Returns 503 outside this window / 非营业时间返回 503)\n
 💡 **Language Tip** Use your browser's built-in translation tool if needed. *(如遇语言障碍，请开启浏览器翻译)*
 """,
 )
@@ -54,23 +55,33 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 @app.middleware("http")
 async def edge_security_and_sla_middleware(request: Request, call_next):
     
-    # --- A. SLA Service Window (09:30 - 21:30) ---
-    current_time = datetime.now().time()
-    start_time = time(9, 30)
-    end_time = time(21, 30)
+    # --- A. SLA Service Window (10:30 - 22:30) ---
+    current_time = datetime.now(ZoneInfo("Asia/Shanghai")).time()
+    start_time = time(10, 30)
+    end_time = time(22, 30)
     
-    if not (start_time <= current_time <= end_time):
-        return JSONResponse(
-            status_code=503,
-            content={"detail": "❌Service is currently closed. Our SLA window is 09:30 - 21:30."}
-        )
+    exempt_paths = ["/", "/docs", "/openapi.json", "/auth/login", "/auth/register"]
+
+    if request.url.path not in exempt_paths:
+        if not (start_time <= current_time <= end_time):
+            return JSONResponse(
+                status_code=503,
+                content={"detail":"❌ Service is currently closed. Our SLA window is 10:30 ~ 22:30 (UTC+8)."}
+            )
 
     # --- B. Mini-WAF (Bot Fight Mode) ---
     user_agent = request.headers.get("user-agent", "").lower()
+    client_ip = request.client.host
+
+    whitelist_ips = ["127.0.0.1","::1"]
+    whitelist_uas = ["ethan-master-key","postmanruntime"]
+
+    if client_ip in whitelist_ips or any(ua in user_agent for ua in whitelist_uas):
+        return await call_next(request)
     
     # Block known scraping libraries and empty User-Agents (basic bot fight)
     malicious_bots = ["python-requests", "scrapy", "curl", "wget", "postman"]
-    
+
     if not user_agent or any(bot in user_agent for bot in malicious_bots):
         return JSONResponse(
             status_code=403, 

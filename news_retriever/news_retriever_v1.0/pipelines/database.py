@@ -1,7 +1,9 @@
 import sqlite3
 from datetime import datetime
+import os
 
-DB_PATH = "search_history.db"
+os.makedirs("data", exist_ok=True)
+DB_PATH = "data/search_history.db"
 
 def init_db():
 

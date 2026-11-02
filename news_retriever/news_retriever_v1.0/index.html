@@ -39,7 +39,7 @@
 
 <div class="container">
     <div class="notice-board">
-        <p>🕒 <b>Server SLA Window:</b> 09:30 - 21:30 (Daily) | 服务器开放时间：每日 09:30 - 21:30</p>
+        <p>🕒 <b>Server SLA Window:</b> 10:30 - 22:30 (Daily, UTC+8) | 服务器开放时间：每日 10:30 - 22:30（北京时间）</p>
         <p>💡 <b>Tip:</b> Please use your browser's translation tool if needed. | 提示：请自行开启浏览器翻译功能。</p>
     </div>
 
@@ -50,7 +50,7 @@
 
     <div id="authPanel" class="auth-panel">
         <h2>🔐 System Access</h2>
-        <p style="color: var(--text-muted); margin-bottom: 20px;">请登录后使用检索功能（默认管理员: __admin__ / admin123）</p>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">请登录后使用检索功能（默认Default: admin / 123456）</p>
         <input type="text" id="authUsername" placeholder="Username / 用户名">
         <input type="password" id="authPassword" placeholder="Password / 密码">
         <div>
@@ -64,6 +64,10 @@
         <div class="search-wrapper">
             <input type="text" id="keywordInput" placeholder="Enter keyword (e.g., AI, 经济)..." onkeypress="if(event.key === 'Enter') searchNews()">
             <button class="search-btn" id="searchBtn" onclick="searchNews()">Search</button>
+        </div>
+        </div id="historyPanel" style="display: none; margin-bottom: 20px;">
+            <span style="color: var(--text-muted); font-size: 14px; margin-right: 10px;">🕒 Recent Searches:</span>
+            <div id="historyTags" style="display: inline-flex; gap: 8px; flex-wrap:wrap;"></div>
         </div>
         <ul class="results" id="resultsList"></ul>
     </div>
@@ -114,7 +118,7 @@
             showSearchPanel(data.access_token);
             
         } catch (error) {
-            alert(`🚨 登录失败: ${error.message}`);
+            alert(`❌ 登录失败: ${error.message}`);
         }
     }
 
@@ -135,10 +139,41 @@
             alert("✅ 注册成功！请点击登录。");
             
         } catch (error) {
-            alert(`🚨 注册失败: ${error.message}`);
+            alert(`❌ 注册失败: ${error.message}`);
         }
     }
+    async function loadHistory() {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        try {
+            const res = await fetch('/api/history', { headers: { 'Authorization': `Bearer ${token}` }});
+            const data = await res.json();
+            const tagsDiv = document.getElementById('historyTags');
+            tagsDiv.innerHTML = '';
+        
+            if (data.history && data.history.length > 0) {
+                document.getElementById('historyPanel').style.display = 'block';
+                data.history.forEach(item => {
+                    const tag = document.createElement('span');
+                    tag.innerText = item.keyword;
+                    tag.style.cssText = "background: #334155; padding: 4px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; transition: 0.2s;";
+                    tag.onmouseover = () => tag.style.background = "#475569";
+                    tag.onmouseout = () => tag.style.background = "#334155";
+                
+                    tag.onclick = () => {
+                        document.getElementById('keywordInput').value = item.keyword;
+                        searchNews();
+                    };
+                    tagsDiv.appendChild(tag);
+                });
+            }
+        } catch (e) { console.error("History load failed", e); }
+    }
 
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('token')) loadHistory();
+    });
     async function searchNews() {
         const keyword = document.getElementById('keywordInput').value.trim();
         if (!keyword) return;
@@ -159,7 +194,7 @@
             });
             
             if (response.status === 401) {
-                alert("凭证已过期，请重新登录");
+                alert("❌凭证已过期，请重新登录");
                 return logout();
             }
 
@@ -175,14 +210,14 @@ if (data.data && data.data.length > 0) {
     data.data.forEach(newsItem => {
         const li = document.createElement('li');
 
-    let sentimentColor = "#f59e0b"; // 默认黄色
+    let sentimentColor = "#f59e0b"; 
     let sentimentText = "[ WARN ]";
 
     if (newsItem.sentiment_label === "Positive") {
-        sentimentColor = "#10b981"; // 绿色
+        sentimentColor = "#10b981"; 
         sentimentText = "[ PASS ]";
     } else if (newsItem.sentiment_label === "Negative") {
-        sentimentColor = "#ef4444"; // 红色
+        sentimentColor = "#ef4444"; 
         sentimentText = "[ FAIL ]";
     }
 
@@ -196,6 +231,7 @@ if (data.data && data.data.length > 0) {
         
         list.appendChild(li);
     });
+    loadHistory();
 } else {
     list.innerHTML = '<li>No news found.</li>';
 }
@@ -203,6 +239,9 @@ if (data.data && data.data.length > 0) {
             btn.disabled = false; btn.innerText = "Search";
         }
     }
+    window.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem("token")) loadHistory();
+    });
 </script>
 </body>
 </html>

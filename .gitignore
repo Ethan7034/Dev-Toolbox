@@ -31,3 +31,4 @@ news_retriever/data/*.json
 *.dylib
 build/
 bin/
+data/

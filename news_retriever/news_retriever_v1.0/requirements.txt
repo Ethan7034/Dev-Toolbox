@@ -2,6 +2,5 @@ fastapi
 uvicorn
 requests
 snownlp
-python-multipart
+python-multipart==0.0.12
 slowapi
-sqlite3
