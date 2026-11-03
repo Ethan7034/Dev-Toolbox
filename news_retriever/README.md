@@ -8,7 +8,7 @@ The **News Retriever** is a microservice-based data pipeline designed for real-t
 ### 🛡️ 1. Edge Security & Network Access Layer
 *   **Cloudflare WAF (Web Application Firewall)**: Intercepts malicious traffic, prevents DDoS attacks, and blocks automated bots at the edge.
 *   **Cloudflared Tunnel**: Establishes a secure, outbound-only connection to expose the local FastAPI service to the public internet without opening inbound ports.
-*   **SLA Management**: The service operates within a predefined Service Level Agreement (e.g., 09:30 - 21:30 daily) to ensure resource efficiency.
+*   **SLA Management**: The service operates within a predefined Service Level Agreement (e.g., 10:30 - 22:30 daily) to ensure resource efficiency.
 
 ### 🌐 2. Frontend Presentation Layer
 *   **Minimalist Web UI**: Built with pure HTML and Vanilla JavaScript (no heavy frontend frameworks).

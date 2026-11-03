@@ -3,6 +3,7 @@ from pipelines.scraper import search_all_sources
 from pipelines.nlp import analyze_sentiment 
 from routers.auth import get_current_user
 from pipelines.database import log_search
+from pipelines.llm import generate_ai_summary
 
 router = APIRouter(prefix="/api", tags=["Search"])
 
@@ -17,13 +18,17 @@ def search_news(
         if not results:
             return {"status": "success", "message": "No news found.", "count": 0, "data": []}
             
-        for news in results:
-
+        for index, news in enumerate(results):
+    
             sentiment_data = analyze_sentiment(news["title"])
-
             news["sentiment_score"] = sentiment_data["score"]
             news["sentiment_label"] = sentiment_data["label"]
-            
+    
+            if index < 5:
+                news["ai_summary"] = generate_ai_summary(news["title"])
+            else:
+                news["ai_summary"] = "..." 
+
         return {
             "status": "success",
             "user": current_user,
