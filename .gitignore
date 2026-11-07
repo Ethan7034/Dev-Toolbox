@@ -20,6 +20,7 @@ Thumbs.db
 # Logs and local data
 *.log
 news_retriever/data/*.json
+tunnel_log.txt
 
 # C/C++
 *.exe
@@ -29,6 +30,7 @@ news_retriever/data/*.json
 *.dll
 *.so
 *.dylib
+
 build/
 bin/
 data/
