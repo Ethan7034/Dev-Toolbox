@@ -4,3 +4,4 @@ requests
 snownlp
 python-multipart==0.0.12
 slowapi
+dotenv

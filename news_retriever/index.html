@@ -88,7 +88,7 @@
         .search-wrapper {
             display: flex;
             gap: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         input[type="text"] {
@@ -111,12 +111,80 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button.search-btn:hover {
+            background-color: var(--accent-hover);
         }
 
         button.search-btn:disabled {
             background-color: #475569;
             cursor: not-allowed;
         }
+
+        .global-ai-panel {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .ai-header {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ai-content {
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 新增：Loading 呼吸灯动画 */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        #historyPanel {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .history-tag {
+            background: #334155;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+            color: var(--text-main);
+        }
+        .history-tag:hover { background: #475569; }
 
         .results {
             list-style: none;
@@ -132,6 +200,7 @@
             border-radius: 8px;
             border-left: 4px solid var(--accent);
             line-height: 1.6;
+            word-break: break-word;
         }
 
         .source-tag {
@@ -139,6 +208,17 @@
             font-size: 12px;
             margin-right: 8px;
             font-weight: bold;
+        }
+
+        .news-link {
+            color: var(--text-main);
+            text-decoration: none;
+            border-bottom: 1px dashed #94a3b8;
+            transition: 0.2s;
+        }
+        .news-link:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
         .error-msg {
@@ -161,59 +241,30 @@
             text-decoration: underline;
         }
 
+        .system-notice {
+            background-color: rgba(148, 163, 184, 0.1); 
+            color: var(--text-muted);
+            font-size: 13px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px dashed #475569; 
+        }
+
         @media screen and (max-width: 768px) {
-
-            body,
-            .container {
-                display: flex !important;
-                flex-direction: column !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 10px !important;
-                box-sizing: border-box !important;
-            }
-
-            h1 {
-                font-size: 22px !important;
-                text-align: center !important;
-                margin: 15px 0 !important;
-            }
-
-            .notice-board,
-            .status-bar,
-            .search-wrapper {
-                width: 100% !important;
-                box-sizing: border-box !important;
-                margin-bottom: 15px !important;
-            }
-
-            .status-bar {
-                text-align: center !important;
-            }
-
-            .search-wrapper {
-                flex-direction: column !important;
-                gap: 10px !important;
-            }
-
-            .search-wrapper input,
-            .search-wrapper button {
-                width: 100% !important;
-            }
-
-            .results {
-                width: 100% !important;
-            }
-
-            .results li {
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-                padding: 12px !important;
-                font-size: 14px !important;
-            }
+            body { padding: 15px !important; }
+            h1 { font-size: 24px !important; margin-top: 10px; margin-bottom: 15px; }
+            .notice-board { margin-bottom: 15px !important; padding: 12px !important; font-size: 13px; }
+            .search-wrapper { flex-direction: column !important; gap: 10px !important; margin-bottom: 15px !important; }
+            .search-wrapper input, .search-wrapper button { width: 100% !important; box-sizing: border-box !important; }
+            button.search-btn { padding: 14px; }
+            .results li { width: 100% !important; box-sizing: border-box !important; padding: 15px !important; font-size: 14px !important; }
+            .global-ai-panel { padding: 12px !important; margin-bottom: 15px !important; }
+            .ai-content { font-size: 13px !important; }
+            .system-notice { font-size: 12px; padding: 8px 10px; }
         }
     </style>
 </head>
@@ -244,19 +295,36 @@
 
         <div id="searchPanel" style="display: none;">
             <h1>📡 News Retriever Engine</h1>
+            
             <div class="search-wrapper">
-                <input type="text" id="keywordInput" placeholder="Enter keyword (e.g., AI, 经济)..."
+                <input type="text" id="keywordInput" placeholder="Enter keyword (e.g., AI, 英伟达)..."
                     onkeypress="if(event.key === 'Enter') searchNews()">
                 <button class="search-btn" id="searchBtn" onclick="searchNews()">Search</button>
             </div>
+            
+            <div class="system-notice">
+                <span>ℹ️</span> 
+                <span>提示：当前系统以科技类信源为主，尚未接入其他信源，搜索其他词汇可能无结果，敬请谅解。
+                </span>
+            </div>
+
+            <div class="system-notice warning-notice">
+                <span>⚠️</span> 
+                <span>预警：请勿搜索游戏、动漫、网络热梗等非新闻词汇。系统已启用 AI 意图拦截，违规词汇将被直接拦截并拒绝检索。</span>
+            </div>
+
+            <div id="globalAIPanel" class="global-ai-panel" style="display: none;">
+                <div class="ai-header">🤖 Global AI Insight (全局洞察)</div>
+                <div id="globalAIContent" class="ai-content">Analyzing...</div>
+            </div>
+
+            <div id="historyPanel" style="display: none;">
+                <span class="history-label">🕒 Recent Searches:</span>
+                <div id="historyTags" style="display: contents;"></div>
+            </div>
         </div>
-        <div id="historyPanel" style="display: none; margin-bottom: 20px;">
-            <span style="color: var(--text-muted); font-size: 14px; margin-right: 10px;">🕒 Recent Searches:</span>
-            <div id="historyTags" style="display: inline-flex; gap: 8px; flex-wrap:wrap;"></div>
-        </div>
-    </div>
-    <ul class="results" id="resultsList"></ul>
-    </div>
+
+        <ul class="results" id="resultsList"></ul>
     </div>
 
     <script>
@@ -264,6 +332,7 @@
             const token = localStorage.getItem('token');
             if (token) {
                 showSearchPanel(token);
+                loadHistory(); 
             }
         };
 
@@ -302,6 +371,7 @@
                 localStorage.setItem('token', data.access_token);
                 alert("✅ 登录成功！");
                 showSearchPanel(data.access_token);
+                loadHistory();
 
             } catch (error) {
                 alert(`❌ 登录失败: ${error.message}`);
@@ -328,6 +398,7 @@
                 alert(`❌ 注册失败: ${error.message}`);
             }
         }
+
         async function loadHistory() {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -338,28 +409,23 @@
                 tagsDiv.innerHTML = '';
 
                 if (data.history && data.history.length > 0) {
-                    document.getElementById('historyPanel').style.display = 'block';
+                    document.getElementById('historyPanel').style.display = 'flex';
                     data.history.forEach(item => {
                         const tag = document.createElement('span');
+                        tag.className = 'history-tag';
                         tag.innerText = item.keyword;
-                        tag.style.cssText = "background: #334155; padding: 4px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; transition: 0.2s;";
-                        tag.onmouseover = () => tag.style.background = "#475569";
-                        tag.onmouseout = () => tag.style.background = "#334155";
-
                         tag.onclick = () => {
                             document.getElementById('keywordInput').value = item.keyword;
                             searchNews();
                         };
                         tagsDiv.appendChild(tag);
                     });
+                } else {
+                    document.getElementById('historyPanel').style.display = 'none';
                 }
             } catch (e) { console.error("History load failed", e); }
         }
 
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('token')) loadHistory();
-        });
         async function searchNews() {
             const keyword = document.getElementById('keywordInput').value.trim();
             if (!keyword) return;
@@ -369,23 +435,49 @@
 
             const btn = document.getElementById('searchBtn');
             const list = document.getElementById('resultsList');
+            const globalPanel = document.getElementById('globalAIPanel');
 
-            btn.disabled = true; btn.innerText = "Searching...";
-            list.innerHTML = '<li>Fetching data...</li>';
+            btn.disabled = true; 
+            btn.innerText = "Searching...";
+            globalPanel.style.display = 'none'; 
+
+            list.innerHTML = `<li id="loadingMsg" style="color: var(--text-muted); animation: pulse 1.5s infinite;">🔍 正在验证搜索意图...</li>`;
+            
+            let step = 0;
+            const loadingSteps = [
+                "🌐 正在并发扫描12个新闻源...",
+                "🧠 NLP 情感分析引擎已启动...",
+                "🤖 GLM-4 大模型正在生成全局洞察...",
+                "📝 正在组装 JSON 数据..."
+            ];
+            
+            const loadingTimer = setInterval(() => {
+                const msgEl = document.getElementById('loadingMsg');
+                if (msgEl && step < loadingSteps.length) {
+                    msgEl.innerText = loadingSteps[step];
+                    step++;
+                } else {
+                    clearInterval(loadingTimer);
+                }
+            }, 3000);
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 40000);
 
             try {
                 const response = await fetch(`/api/search?keyword=${encodeURIComponent(keyword)}`, {
                     method: 'GET',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    signal: controller.signal
                 });
 
                 if (response.status === 401) {
-                    alert("❌ Invalid token. Please log in again.\n❌凭证已过期，请重新登录");
+                    alert("❌ Invalid token. Please login again.\n凭证已过期，请重新登录");
                     return logout();
                 }
 
                 if (response.status === 503) {
-                    throw new Error("❌The service is currently closed.\n❌服务器已关闭（服务时间：10:30 ~ 22:30）")
+                    throw new Error("❌ The service is currently closed.\n服务器已关闭 服务时间：10:30 ~ 22:30（UTC+8）");
                 }
 
                 if (!response.ok) {
@@ -394,46 +486,60 @@
                 }
 
                 const data = await response.json();
-                list.innerHTML = '';
+                clearInterval(loadingTimer); 
+                list.innerHTML = ''; 
 
-                if (data.data && data.data.length > 0) {
-                    data.data.forEach(newsItem => {
-                        const li = document.createElement('li');
-
-                        let sentimentColor = "#f59e0b";
-                        let sentimentText = "[ WARN ]";
-
-                        if (newsItem.sentiment_label === "Positive") {
-                            sentimentColor = "#10b981";
-                            sentimentText = "[ PASS ]";
-                        } else if (newsItem.sentiment_label === "Negative") {
-                            sentimentColor = "#ef4444";
-                            sentimentText = "[ FAIL ]";
-                        }
-
-                        li.innerHTML = `
-                            <span style="color: ${sentimentColor}; font-weight: bold; margin-right: 8px; font-family: monospace;">
-                                ${sentimentText}
-                            </span>
-                            <span class="source-tag">[${newsItem.source}]</span> 
-                            <a href="${newsItem.url}" target="_blank" style="color: var(--text-main); text-decoration: none; border-bottom: 1px dashed #94a3b8; transition: 0.2s;" onmouseover="this.style.color='#3b82f6'" onmouseout="this.style.color='var(--text-main)'">
-                                ${newsItem.title}
-                            </a >
-                        `;
-
-                        list.appendChild(li);
-                    });
-                    loadHistory();
-                } else {
-                    list.innerHTML = '<li>No news found.</li>';
+                if (!data.data || data.data.length === 0) {
+                    list.innerHTML = `<li class="error-msg" style="border-left-color: #f59e0b; color: #f59e0b;">⚠️ ${data.message || '未找到相关结果。请尝试更宽泛的词汇。'}</li>`;
+                    return; 
                 }
+
+                if (data.global_ai_summary && data.global_ai_summary.trim() !== "" && !data.global_ai_summary.includes("失败")) {
+                    document.getElementById('globalAIContent').innerText = data.global_ai_summary;
+                    globalPanel.style.display = 'block';
+                }
+
+                data.data.forEach(newsItem => {
+                    const li = document.createElement('li');
+
+                    let sentimentColor = "#f59e0b";
+                    let sentimentText = "[ WARN ]";
+
+                    if (newsItem.sentiment_label === "Positive") {
+                        sentimentColor = "#10b981";
+                        sentimentText = "[ PASS ]";
+                    } else if (newsItem.sentiment_label === "Negative") {
+                        sentimentColor = "#ef4444";
+                        sentimentText = "[ FAIL ]";
+                    }
+
+                    li.innerHTML = `
+                        <span style="color: ${sentimentColor}; font-weight: bold; margin-right: 8px; font-family: monospace;">
+                            ${sentimentText}
+                        </span>
+                        <span class="source-tag">[${newsItem.source}]</span> 
+                        <a href="${newsItem.url}" target="_blank" class="news-link">
+                            ${newsItem.title}
+                        </a>
+                    `;
+                    list.appendChild(li);
+                });
+                loadHistory(); 
+
+            } catch (error) {
+                clearInterval(loadingTimer);
+                let errorMsg = error.message;
+                if (error.name === 'AbortError') {
+                    errorMsg = "❌ Request timed out. Please try again.\n请求超时，请重试。";
+                }
+                list.innerHTML = `<li class="error-msg">⚠️ ${errorMsg}</li>`;
             } finally {
-                btn.disabled = false; btn.innerText = "Search";
+                clearTimeout(timeoutId);
+                clearInterval(loadingTimer); 
+                btn.disabled = false;
+                btn.innerText = "Search";
             }
         }
-        window.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem("token")) loadHistory();
-        });
     </script>
 </body>
 
