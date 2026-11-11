@@ -1,24 +1,21 @@
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat-square&logo=fastapi&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-2.0+-150458?style=flat-square&logo=pandas&logoColor=white)
-![NLP](https://img.shields.io/badge/NLP-SnowNLP-yellow?style=flat-square)
-![Cloudflare](https://img.shields.io/badge/Cloudflare_Tunnel-F38020?style=flat-square&logo=cloudflare&logoColor=white)
-![NLTK](https://img.shields.io/badge/NLTK-Natural%20Language%20Toolkit-blue)
-# Python Data Science to Cloud-Native
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)]
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat-square&logo=fastapi&logoColor=white)]
+[![Pandas](https://img.shields.io/badge/Pandas-2.0+-150458?style=flat-square&logo=pandas&logoColor=white)]
+[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker&logoColor=white)]
+[![Cloudflare](https://img.shields.io/badge/Cloudflare_Tunnel-F38020?style=flat-square&logo=cloudflare&logoColor=white)]
 
-## 📌 About This Repository
-This repository documents my journey as a Computer Science and AI student transitioning from fundamental data science to cloud-native engineering. 
+# Ethan's Core Toolbox & Archive
 
-My core focus:
-- **Data Processing & NLP**: Extracting, cleaning, and summarizing unstructured data.
-- **API Development**: Wrapping data pipelines into scalable services using FastAPI.
-- **Cloud-Native Deployment**: Containerizing services with Docker for portability and scalability.
+## 💡 About This Repository
+This repository serves as my foundational codebase, acting as a centralized archive for reusable modules, early-stage projects, and cloud-native infrastructure templates.
 
-## 🎯 Goal
-To build production-ready data microservices that can be deployed on cloud infrastructure, solving real-world data challenges in areas such as healthcare and climate tech.
+## 📂 Directory Structure
 
-## 🚀 Roadmap
-Complete Python data cleaning & NLP module (NEOSCHOOL curriculum)
-Build a FastAPI service to expose NLP capabilities
-Containerize the service using Docker
-Deploy to a cloud server and set up CI/CD
+*   📁 **`news_retriever`** 
+    The core application (V1.0 to V2.0). A high-availability cloud-native pipeline integrating FastAPI, NLP, and LLM capabilities, fully containerized with Docker.
+*   📁 **`code_corpus`** 
+    Archive of foundational programming. Includes the early User Login System (V4.0 CRUD architecture) and basic algorithmic structures (e.g., random seafood order generators).
+*   📁 **`code_tools`** 
+    Utility scripts and binaries. Contains the `cloudflared.exe` used for secure network tunneling and local deployment tests.
+*   📁 **`neoschool_project`** 
+    Academic coursework and data science projects completed during the curriculum.

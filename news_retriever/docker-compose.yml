@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # 1. 你的 FastAPI 应用
   web:
     build: .
     container_name: news_retriever
@@ -10,17 +7,15 @@ services:
     environment:
       - ZHIPU_API_KEY=51d907fcfdaa44a7a84272860e27812e2.YExdW68diEJYtC8d
       - TZ=Asia/Shanghai
-    restart: always  # 崩溃自动重启
+    restart: always 
     networks:
       - app-network
 
-  # 2. Cloudflare 隧道
   tunnel:
     image: cloudflare/cloudflared:latest
     container_name: cf_tunnel
-    # 关键：强制 HTTP/2 防 UDP 拦截，加入 keepalive 防路由器 NAT 掉线
-    command: tunnel --url http://web:8000 --protocol http2 --edge-keepalive
-    restart: always  # 断网恢复后自动重连
+    command: tunnel --url http://web:8000 --protocol http2
+    restart: always 
     depends_on:
       - web
     networks:
